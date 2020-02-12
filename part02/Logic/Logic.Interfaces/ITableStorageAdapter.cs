@@ -12,7 +12,7 @@
     /// </summary>
     /// <typeparam name="T">The type of the <see cref="ITableEntity" /> which is stored in the table.</typeparam>
     public interface ITableStorageAdapter<T>
-        where T : ITableEntity, new()
+        where T : ITableEntity, ITelemetryEntity, new()
     {
         #region methods
 
@@ -28,6 +28,30 @@
         /// </summary>
         /// <returns>The amount of telemetry entries.</returns>
         Task<int> GetCountAsync();
+
+        /// <summary>
+        /// Retrieves the temperatures for a given <paramref name="deviceId" />.
+        /// </summary>
+        /// <param name="deviceId">The serial number of the device.</param>
+        /// <param name="from">The timestamp of the oldest temperature.</param>
+        /// <param name="to">The timestamp of the younges temperature.</param>
+        /// <returns>The temperatures ordered by timestamp.</returns>
+        Task<IEnumerable<ISensorTimeModel>> GetTemperaturesAsync(
+            string deviceId,
+            DateTimeOffset @from,
+            DateTimeOffset to);
+
+        /// <summary>
+        /// Retrieves the humidities for a given <paramref name="deviceId" />.
+        /// </summary>
+        /// <param name="deviceId">The serial number of the device.</param>
+        /// <param name="from">The timestamp of the oldest humiditiy.</param>
+        /// <param name="to">The timestamp of the younges humiditiy.</param>
+        /// <returns>The humidities ordered by timestamp.</returns>
+        Task<IEnumerable<ISensorTimeModel>> GetHumiditiesAsync(
+            string deviceId,
+            DateTimeOffset @from,
+            DateTimeOffset to);
 
         #endregion
     }

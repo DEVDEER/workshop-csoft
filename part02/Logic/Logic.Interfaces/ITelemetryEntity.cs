@@ -1,48 +1,46 @@
-﻿namespace commasoft.Workshop.Logic.Models
+﻿namespace commasoft.Workshop.Logic.Interfaces
 {
     using System;
     using System.Linq;
 
-    using Interfaces;
-
     using Microsoft.WindowsAzure.Storage.Table;
 
     /// <summary>
-    /// Represents one line in the Azure table which stores telemetry data.
+    /// Must be implemented by all telemetry table entities.
     /// </summary>
-    public class TelemeryTableEntity : TableEntity, ITelemetryEntity
+    public interface ITelemetryEntity 
     {
         #region properties
 
         /// <summary>
         /// The serial number of the device.
         /// </summary>
-        public string DeviceId { get; set; }
+        string DeviceId { get; set; }
 
         /// <summary>
         /// The humidity in %.
         /// </summary>
-        public long Humidity { get; set; }
+        long Humidity { get; set; }
 
         /// <summary>
         /// A unique id for the device message.
         /// </summary>
-        public string Id { get; set; }
+        string Id { get; set; }
 
         /// <summary>
         /// The temperature in °C.
         /// </summary>
-        public long Temperature { get; set; }
+        long Temperature { get; set; }
 
         /// <summary>
         /// This wind direction in °.
         /// </summary>
-        public long WindDirection { get; set; }
+        long WindDirection { get; set; }
 
         /// <summary>
         /// The wind speed in m/s.
         /// </summary>
-        public long WindSpeed { get; set; }
+        long WindSpeed { get; set; }
 
         #endregion
     }

@@ -83,6 +83,118 @@
             }
         }
 
+        /// <summary>
+        /// Retrieves the amount of entries.
+        /// </summary>
+        /// <param name="deviceId">The serial number of the device.</param>
+        /// <param name="from">The timestamp of the oldest humiditiy.</param>
+        /// <param name="to">The timestamp of the younges humiditiy.</param>
+        /// <returns>TThe humidity values over time.</returns>
+        [HttpGet]
+        [Route("{deviceId}/Humidities/{from}/{to}")]
+        public async Task<IEnumerable<ISensorTimeModel>> GetHumiditiesAsync(
+            string deviceId,
+            DateTimeOffset from,
+            DateTimeOffset to)
+        {
+            try
+            {
+                return await _adapter.GetHumiditiesAsync(deviceId, from, to);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the humidities for a given <paramref name="deviceId" /> for the current day.
+        /// </summary>
+        /// <param name="deviceId">The serial number of the device.</param>
+        /// <returns>The humidity values over time.</returns>
+        [HttpGet]
+        [Route("{deviceId}/Humidities/Today")]
+        public async Task<IEnumerable<ISensorTimeModel>> GetHumiditiesForCurrentDayAsync(
+            string deviceId)
+        {
+            var to = DateTimeOffset.Now;
+            var from = new DateTimeOffset(
+                to.Year,
+                to.Month,
+                to.Day,
+                0,
+                0,
+                0,
+                0,
+                DateTimeOffset.Now.Offset);
+            try
+            {
+                return await _adapter.GetHumiditiesAsync(deviceId, from, to);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the temperatures for a given <paramref name="deviceId" />.
+        /// </summary>
+        /// <param name="deviceId">The serial number of the device.</param>
+        /// <param name="from">The timestamp of the oldest temperature.</param>
+        /// <param name="to">The timestamp of the younges temperature.</param>
+        /// <returns>The temperature values over time.</returns>
+        [HttpGet]
+        [Route("{deviceId}/Temperatures/{from}/{to}")]
+        public async Task<IEnumerable<ISensorTimeModel>> GetTemperaturesAsync(
+            string deviceId,
+            DateTimeOffset from,
+            DateTimeOffset to)
+        {
+            try
+            {
+                return await _adapter.GetTemperaturesAsync(deviceId, from, to);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the temperatures for a given <paramref name="deviceId" /> for the current day.
+        /// </summary>
+        /// <param name="deviceId">The serial number of the device.</param>
+        /// <returns>The temperature values over time.</returns>
+        [HttpGet]
+        [Route("{deviceId}/Temperatures/Today")]
+        public async Task<IEnumerable<ISensorTimeModel>> GetTemperaturesForCurrentDayAsync(
+            string deviceId)
+        {
+            var to = DateTimeOffset.Now;
+            var from = new DateTimeOffset(
+                to.Year,
+                to.Month,
+                to.Day,
+                0,
+                0,
+                0,
+                0,
+                DateTimeOffset.Now.Offset);
+            try
+            {
+                return await _adapter.GetTemperaturesAsync(deviceId, from, to);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+        }
+
         #endregion
     }
 }

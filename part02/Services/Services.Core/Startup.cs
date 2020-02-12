@@ -15,6 +15,7 @@ namespace commasoft.Workshop.Services.Core
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.OpenApi.Models;
+    using Microsoft.WindowsAzure.Storage.Table;
 
     /// <summary>
     /// App startup used by the web host builder.

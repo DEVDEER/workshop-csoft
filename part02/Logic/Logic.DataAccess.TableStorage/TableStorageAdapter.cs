@@ -18,7 +18,7 @@
     /// </summary>
     /// <typeparam name="T">The type of the <see cref="ITableEntity" /> which is stored in the table.</typeparam>
     public class TableStorageAdapter<T> : ITableStorageAdapter<T>
-        where T : ITableEntity, new()
+        where T : ITableEntity, ITelemetryEntity, new()
     {
         #region constants
 
@@ -61,6 +61,26 @@
         {
             await SyncCacheAsync();
             return _cache.Count;
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<ISensorTimeModel>>
+            GetTemperaturesAsync(string deviceId, DateTimeOffset @from, DateTimeOffset to)
+        {
+            await SyncCacheAsync();
+            return _cache.Where(r => r.Timestamp >= from && r.Timestamp <= to)
+                .OrderBy(r => r.Timestamp)
+                .Select(r => new SensorTimeModel(r.Timestamp, r.Temperature));
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<ISensorTimeModel>>
+            GetHumiditiesAsync(string deviceId, DateTimeOffset @from, DateTimeOffset to)
+        {
+            await SyncCacheAsync();
+            return _cache.Where(r => r.Timestamp >= from && r.Timestamp <= to)
+                .OrderBy(r => r.Timestamp)
+                .Select(r => new SensorTimeModel(r.Timestamp, r.Humidity));
         }
 
         #endregion
