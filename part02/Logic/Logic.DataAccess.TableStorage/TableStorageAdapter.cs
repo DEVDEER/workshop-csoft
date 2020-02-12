@@ -19,7 +19,7 @@
         #region constants
 
         /// <summary>
-        /// Holds the cached entities locally and is handled by <see cref="SyncCacheAsync"/>.
+        /// Holds the cached entities locally and is handled by <see cref="SyncCacheAsync" />.
         /// </summary>
         private static ConcurrentBag<T> _cache;
 
@@ -85,7 +85,10 @@
             var table = client.GetTableReference(Settings.TableName);
             TableContinuationToken token = null;
             // define filter-condition for timestamp
-            var condition = TableQuery.GenerateFilterConditionForDate(nameof(TelemeryTableEntity.Timestamp), QueryComparisons.GreaterThan, lastRetrieved);
+            var condition = TableQuery.GenerateFilterConditionForDate(
+                nameof(TelemeryTableEntity.Timestamp),
+                QueryComparisons.GreaterThan,
+                lastRetrieved);
             // build query
             var query = new TableQuery<T>
             {
@@ -96,7 +99,8 @@
             var result = new List<T>();
             do
             {
-                var segment = await table.ExecuteQuerySegmentedAsync(query, token, null, null).ConfigureAwait(false);
+                var segment = await table.ExecuteQuerySegmentedAsync(query, token, null, null)
+                    .ConfigureAwait(false);
                 result.AddRange(segment.Results);
                 token = segment.ContinuationToken;
             }
