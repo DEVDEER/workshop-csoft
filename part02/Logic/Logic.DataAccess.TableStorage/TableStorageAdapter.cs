@@ -1,6 +1,7 @@
 ﻿namespace Logic.DataAccess.TableStorage
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -15,6 +16,15 @@
     public class TableStorageAdapter<T> : ITableStorageAdapter<T>
         where T : ITableEntity, new()
     {
+        #region constants
+
+        /// <summary>
+        /// Holds the cached entities locally and is handled by <see cref="SyncCacheAsync"/>.
+        /// </summary>
+        private static ConcurrentBag<T> _cache;
+
+        #endregion
+
         #region constructors and destructors
 
         /// <summary>
@@ -30,49 +40,6 @@
 
         #region explicit interfaces
 
-        private static List<T> _cache;
-
-        private async Task SyncCacheAsync()
-        {
-            var lastRetrieved = DateTimeOffset.Now.Subtract(TimeSpan.FromDays(100));
-            if (_cache == null || !_cache.Any())
-            {
-                _cache = new List<T>();
-            }
-            else
-            {
-                lastRetrieved = _cache.Max(e => e.Timestamp);
-            }
-            var storageAccount = CloudStorageAccount.Parse(Settings.ConnectionString);
-            var client = storageAccount.CreateCloudTableClient();
-            var table = client.GetTableReference(Settings.TableName);
-            TableContinuationToken token = null;
-            var condition = TableQuery.GenerateFilterConditionForDate(
-                nameof(TelemeryTableEntity.Timestamp), QueryComparisons.GreaterThan,
-                lastRetrieved);
-            var query = new TableQuery<T>
-            {
-                FilterString = condition,
-                TakeCount = _cache.Any() ? 10 : default(int?)
-            };
-            var result = new List<T>();
-            do
-            {
-                try
-                {
-                    var segment = await table.ExecuteQuerySegmentedAsync(query, token, null, null).ConfigureAwait(false);
-                    result.AddRange(segment.Results);
-                    token = segment.ContinuationToken;
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
-            }
-            while (token != null);
-            _cache.AddRange(result);
-        }
-
         /// <inheritdoc />
         public async Task<IEnumerable<T>> GetAllAsync(int? maxEntries = null)
         {
@@ -85,10 +52,56 @@
             return result;
         }
 
+        /// <inheritdoc />
         public async Task<int> GetCountAsync()
         {
             await SyncCacheAsync();
             return _cache.Count;
+        }
+
+        #endregion
+
+        #region methods
+
+        /// <summary>
+        /// Is called internally to synchronize the local cache with the table storage.
+        /// </summary>
+        private async Task SyncCacheAsync()
+        {
+            var lastRetrieved = DateTimeOffset.Now.Subtract(TimeSpan.FromDays(100));
+            if (_cache == null || !_cache.Any())
+            {
+                // first cache fill
+                _cache = new ConcurrentBag<T>();
+            }
+            else
+            {
+                // retrieve youngest timestamp
+                lastRetrieved = _cache.Max(e => e.Timestamp);
+            }
+            // init SDK objects
+            var storageAccount = CloudStorageAccount.Parse(Settings.ConnectionString);
+            var client = storageAccount.CreateCloudTableClient();
+            var table = client.GetTableReference(Settings.TableName);
+            TableContinuationToken token = null;
+            // define filter-condition for timestamp
+            var condition = TableQuery.GenerateFilterConditionForDate(nameof(TelemeryTableEntity.Timestamp), QueryComparisons.GreaterThan, lastRetrieved);
+            // build query
+            var query = new TableQuery<T>
+            {
+                FilterString = condition,
+                TakeCount = _cache.Any() ? 10 : default(int?)
+            };
+            // fetch results from table storage
+            var result = new List<T>();
+            do
+            {
+                var segment = await table.ExecuteQuerySegmentedAsync(query, token, null, null).ConfigureAwait(false);
+                result.AddRange(segment.Results);
+                token = segment.ContinuationToken;
+            }
+            while (token != null);
+            result.ForEach(r => _cache.Add(r));
         }
 
         #endregion
