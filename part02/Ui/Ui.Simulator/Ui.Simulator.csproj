@@ -11,4 +11,8 @@
     <PackageReference Include="Microsoft.Azure.Devices.Client" Version="1.22.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Logic\Logic.Models\Logic.Models.csproj" />
+  </ItemGroup>
+
 </Project>

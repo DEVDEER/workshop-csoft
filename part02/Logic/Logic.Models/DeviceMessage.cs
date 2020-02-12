@@ -1,4 +1,4 @@
-﻿namespace commasoft.Workshop.Ui.Simulator
+﻿namespace commasoft.Workshop.Logic.Models
 {
     using System;
     using System.Linq;
@@ -10,8 +10,9 @@
     {
         #region properties
 
-        public string Id { get; } = Guid.NewGuid().ToString();
-
+        /// <summary>
+        /// The serial number of the device.
+        /// </summary>
         public string DeviceId { get; set; }
 
         /// <summary>
@@ -20,7 +21,12 @@
         public int Humidity { get; set; }
 
         /// <summary>
-        /// The temperatore in °C.
+        /// A unique id for the device message.
+        /// </summary>
+        public string Id { get; } = Guid.NewGuid().ToString();
+
+        /// <summary>
+        /// The temperature in °C.
         /// </summary>
         public int Temperature { get; set; }
 
@@ -30,7 +36,7 @@
         public int WindDirection { get; set; }
 
         /// <summary>
-        /// The windspeed in m/s.
+        /// The wind speed in m/s.
         /// </summary>
         public int WindSpeed { get; set; }
 

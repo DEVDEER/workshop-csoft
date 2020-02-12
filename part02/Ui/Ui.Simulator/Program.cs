@@ -8,6 +8,8 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Logic.Models;
+
     using Microsoft.Azure.Devices.Client;
 
     using Newtonsoft.Json;
