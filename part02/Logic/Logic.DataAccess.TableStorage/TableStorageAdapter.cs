@@ -30,26 +30,58 @@
 
         #region explicit interfaces
 
-        /// <inheritdoc />
-        public async Task<IEnumerable<T>> GetAllAsync()
+        private static List<T> _cache;
+
+        private async Task SyncCacheAsync()
         {
+            DateTimeOffset lastRetrieved = DateTimeOffset.Now.Subtract(TimeSpan.FromDays(100));
+            if (_cache == null || !_cache.Any())
+            {
+                _cache = new List<T>();
+            }
+            else
+            {
+                lastRetrieved = _cache.Max(e => e.Timestamp);
+            }
             var storageAccount = CloudStorageAccount.Parse(Settings.ConnectionString);
             var client = storageAccount.CreateCloudTableClient();
             var table = client.GetTableReference(Settings.TableName);
-            if (!await table.ExistsAsync())
-            {
-                return null;
-            }
             TableContinuationToken token = null;
-            var query = new TableQuery<T>();
+            var condition = TableQuery.GenerateFilterConditionForDate(
+                "Timestamp", QueryComparisons.GreaterThan,
+                lastRetrieved);
+            var query = new TableQuery<T>
+            {
+                FilterString = condition,
+                TakeCount = _cache.Any() ? 10 : default(int?)
+            };
             var result = new List<T>();
             do
             {
-                var segment = await table.ExecuteQuerySegmentedAsync(query, token, null, null).ConfigureAwait(false);
-                result.AddRange(segment.Results);
-                token = segment.ContinuationToken;
+                try
+                {
+                    var segment = await table.ExecuteQuerySegmentedAsync(query, token, null, null).ConfigureAwait(false);
+                    result.AddRange(segment.Results);
+                    token = segment.ContinuationToken;
+                }
+                catch (Exception e)
+                {
+                    throw;
+                }
             }
             while (token != null);
+            _cache.AddRange(result);
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<T>> GetAllAsync(int? maxEntries)
+        {
+            await SyncCacheAsync();
+            var result = _cache.OrderByDescending(e => e.Timestamp).AsQueryable();
+            if (maxEntries.HasValue)
+            {
+                result = result.Take(maxEntries.Value);
+            }
             return result;
         }
 

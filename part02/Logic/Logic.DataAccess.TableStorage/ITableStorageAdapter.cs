@@ -17,10 +17,11 @@
         #region methods
 
         /// <summary>
-        /// Retrieves all entries from the table.
+        /// Retrieves entries from the table ordered descently by timestamp.
         /// </summary>
+        /// <param name="maxEntries">The optional amount of entries to retrieve or <c>null</c> if all entries should be delivered.</param>
         /// <returns>The list of entries.</returns>
-        Task<IEnumerable<T>> GetAllAsync();
+        Task<IEnumerable<T>> GetAllAsync(int? maxEntries);
 
         #endregion
     }

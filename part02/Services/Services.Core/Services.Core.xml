@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Services.Core</name>
+    </assembly>
+    <members>
+        <member name="T:Services.Core.Controllers.TelemetryController">
+            <summary>
+            Provides endpoints for retrieval of telemetry data.
+            </summary>
+        </member>
+        <member name="M:Services.Core.Controllers.TelemetryController.#ctor(Microsoft.Extensions.Logging.ILogger{Services.Core.Controllers.TelemetryController},Logic.DataAccess.TableStorage.ITableStorageAdapter{Logic.DataAccess.TableStorage.TelemeryTableEntity})">
+            <summary>
+            Default constructor.
+            </summary>
+            <param name="logger">The logger to use.</param>
+            <param name="adapter">The table adapter to retrieve data.</param>
+        </member>
+        <member name="M:Services.Core.Controllers.TelemetryController.Get(System.Nullable{System.Int32})">
+            <summary>
+            Retrieves a list of telemtry entries ordered by timestamp descendently.
+            </summary>
+            <param name="maxEntries">The optional amount of entries to retrieve or <c>null</c> if all entries should be delivered.</param>
+            <returns>The list of telemetry entries.</returns>
+        </member>
+    </members>
+</doc>
