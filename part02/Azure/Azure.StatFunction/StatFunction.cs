@@ -96,14 +96,14 @@ namespace commasoft.Workshop.Azure.StatFunction
                     log.LogInformation(deviceId);
                     stats.MessageCount++;
                     var isError = temperature < -50 || temperature > 59 || humidity < 0 || humidity > 100 || windDirection < 0 || windDirection > 359 || windSpeed < 0 || windSpeed > 70;
-                    if (!stats.DeviceErrors.Any(d => d.DeviceId == deviceId))
+                    if (stats.DeviceErrors.All(d => d.DeviceId != deviceId))
                     {
                         stats.DeviceErrors.Add(new DeviceErrorEntry { DeviceId = deviceId, ErrorsCount = isError ? 1 : 0 });
                         log.LogInformation("Added device.");
                     }
                     else
                     {
-                        var errors = stats.DeviceErrors.First(d => d.DeviceId == deviceId).ErrorsCount += isError ? 1 : 0;
+                        stats.DeviceErrors.First(d => d.DeviceId == deviceId).ErrorsCount += isError ? 1 : 0;
                         log.LogInformation("Updated device.");
                     }
                 }
@@ -111,19 +111,19 @@ namespace commasoft.Workshop.Azure.StatFunction
                 log.LogInformation("Stats saved.");
                 return req.CreateResponse(HttpStatusCode.OK);
             }
-            catch (Exception)
+            catch 
             {
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
         }
 
         /// <summary>
-        /// 
+        /// Retrieves the reference to the Block-BLOB in Azure.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The Block-BLOB-reference.</returns>
         private static CloudBlockBlob GetBlobReference()
         {
-            // TODO 
+            // TODO Replace with your connection string
             var account = CloudStorageAccount.Parse("CONNECTION_STRING");
             var serviceClient = account.CreateCloudBlobClient();
             var container = serviceClient.GetContainerReference("stats");
@@ -131,10 +131,9 @@ namespace commasoft.Workshop.Azure.StatFunction
         }
 
         /// <summary>
-        /// 
+        /// Saves the given <paramref name="stats"/> to Azure BLOB storage.
         /// </summary>
-        /// <param name="stats"></param>
-        /// <returns></returns>
+        /// <param name="stats">The statistics to store.</param>
         public static async Task SetCurrentStatsAsync(Stats stats)
         {
             var blob = GetBlobReference();

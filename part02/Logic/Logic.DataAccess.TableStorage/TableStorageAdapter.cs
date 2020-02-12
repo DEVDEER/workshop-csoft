@@ -8,21 +8,19 @@
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Table;
 
-    public interface ITableStorageAdapter<T>
-        where T : ITableEntity, new()
-    {
-        #region methods
-
-        Task<IEnumerable<T>> GetAllAsync();
-
-        #endregion
-    }
-
+    /// <summary>
+    /// Default implementation of a simple table storage adapter.
+    /// </summary>
+    /// <typeparam name="T">The type of the <see cref="ITableEntity" /> which is stored in the table.</typeparam>
     public class TableStorageAdapter<T> : ITableStorageAdapter<T>
         where T : ITableEntity, new()
     {
         #region constructors and destructors
 
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        /// <param name="settings">The settings for connecting to the storage.</param>
         public TableStorageAdapter(TableStorageAdapterSettings settings)
         {
             Settings = settings;
@@ -32,6 +30,7 @@
 
         #region explicit interfaces
 
+        /// <inheritdoc />
         public async Task<IEnumerable<T>> GetAllAsync()
         {
             var storageAccount = CloudStorageAccount.Parse(Settings.ConnectionString);
@@ -58,6 +57,9 @@
 
         #region properties
 
+        /// <summary>
+        /// The settings passed in using DI.
+        /// </summary>
         private TableStorageAdapterSettings Settings { get; }
 
         #endregion

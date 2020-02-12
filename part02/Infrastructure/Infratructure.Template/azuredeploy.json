@@ -2,12 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
   "parameters": {
-    "IotHubs_ioh_dd_comma_test_connectionString": {
-      "type": "SecureString"
-    },
-    "IotHubs_ioh_dd_comma_test_containerName": {
-      "type": "SecureString"
-    },
     "LogicAppStorageConnectionName": {
       "defaultValue": "azureblob",
       "type": "String"
@@ -15,6 +9,9 @@
     "LogicAppOffice365ConnectionName": {
       "defaultValue": "office365",
       "type": "String"
+    },
+    "LogicAppOffice365ConnectionDisplayName": {
+        "type": "string"
     },
     "FunctionAppName": {
       "defaultValue": "fapp-dd-cs-test",
@@ -46,14 +43,6 @@
     },
     "StreamAnalyticsJobName": {
       "defaultValue": "sana-dd-comma-test",
-      "type": "String"
-    },
-    "smartdetectoralertrules_failure_anomalies___ai_dd_cs_test_name": {
-      "defaultValue": "failure anomalies - ai-dd-cs-test",
-      "type": "String"
-    },
-    "actiongroups_application_20insights_20smart_20detection_externalid": {
-      "defaultValue": "/subscriptions/', subscription().subscriptionId, '/resourceGroups/rg-comma/providers/microsoft.insights/actiongroups/application%20insights%20smart%20detection",
       "type": "String"
     }
   },
@@ -184,7 +173,7 @@
             "name": "[parameters('LogicAppOffice365ConnectionName')]",
             "location": "westeurope",
             "properties": {
-                "displayName": "alexander.schmidt@devdeer.com",
+                "displayName": "[parameters('LogicAppOffice365ConnectionDisplayName')]",
                 "customParameterValues": {},
                 "api": {
                     "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/westeurope/managedApis/', parameters('LogicAppOffice365ConnectionName'))]"
@@ -213,40 +202,6 @@
                 "hyperV": false,
                 "targetWorkerCount": 0,
                 "targetWorkerSizeId": 0
-            }
-        },
-        {
-            "type": "microsoft.alertsmanagement/smartdetectoralertrules",
-            "apiVersion": "2019-06-01",
-            "name": "[parameters('smartdetectoralertrules_failure_anomalies___ai_dd_cs_test_name')]",
-            "location": "global",
-            "dependsOn": [
-                "[resourceId('microsoft.insights/components', parameters('ApplicationInsightsName'))]"
-            ],
-            "properties": {
-                "description": "Failure Anomalies notifies you of an unusual rise in the rate of failed HTTP requests or dependency calls.",
-                "state": "Enabled",
-                "severity": "Sev3",
-                "frequency": "PT1M",
-                "detector": {
-                    "id": "FailureAnomaliesDetector",
-                    "name": "Failure Anomalies",
-                    "description": "Detects if your application experiences an abnormal rise in the rate of HTTP requests or dependency calls that are reported as failed. The anomaly detection uses machine learning algorithms and occurs in near real time, therefore there's no need to define a frequency for this signal.<br/></br/>To help you triage and diagnose the problem, an analysis of the characteristics of the failures and related telemetry is provided with the detection. This feature works for any app, hosted in the cloud or on your own servers, that generates request or dependency telemetry - for example, if you have a worker role that calls <a href=\\\"https://docs.microsoft.com/en-us/azure/application-insights/app-insights-api-custom-events-metrics#trackrequest\\\" target=\\\"_blank\\\">TrackRequest()</a> or <a href=\\\"https://docs.microsoft.com/en-us/azure/application-insights/app-insights-api-custom-events-metrics#trackdependency\\\" target=\\\"_blank\\\">TrackDependency()</a>.",
-                    "supportedResourceTypes": [
-                        "ApplicationInsights"
-                    ],
-                    "imagePaths": [
-                        "https://globalsmartdetectors.blob.core.windows.net/detectors/FailureAnomaliesDetector/v0.18/FailureAnomaly.png"
-                    ]
-                },
-                "scope": [
-                    "[resourceId('microsoft.insights/components', parameters('ApplicationInsightsName'))]"
-                ],
-                "actionGroups": {
-                    "groupIds": [
-                        "[parameters('actiongroups_application_20insights_20smart_20detection_externalid')]"
-                    ]
-                }
             }
         },
         {
@@ -331,16 +286,16 @@
                 "properties": {
                     "inputs": [
                         {
-                            "dataType": "any"
+                            "dataType": "bigint"
                         },
                         {
-                            "dataType": "any"
+                            "dataType": "bigint"
                         },
                         {
-                            "dataType": "any"
+                            "dataType": "bigint"
                         },
                         {
-                            "dataType": "any"
+                            "dataType": "bigint"
                         }
                     ],
                     "output": {
@@ -382,8 +337,7 @@
                     "properties": {
                         "encoding": "UTF8"
                     }
-                },
-                "etag": "d500c2e9-c3d4-4219-96bd-4d0b9b884edf"
+                }
             }
         },
         {
@@ -434,7 +388,6 @@
                         "table": "errors",
                         "partitionKey": "DeviceId",
                         "rowKey": "Id",
-                        "columnsToRemove": null,
                         "batchSize": 1
                     }
                 }
@@ -475,7 +428,6 @@
                         "table": "telemetry",
                         "partitionKey": "DeviceId",
                         "rowKey": "Id",
-                        "columnsToRemove": null,
                         "batchSize": 1
                     }
                 }
@@ -606,10 +558,10 @@
                 "[resourceId('Microsoft.Web/sites', parameters('FunctionAppName'))]"
             ],
             "properties": {
-                "script_root_path_href": "https://fapp-dd-cs-test.azurewebsites.net/admin/vfs/site/wwwroot/HttpTrigger1/",
-                "script_href": "https://fapp-dd-cs-test.azurewebsites.net/admin/vfs/site/wwwroot/HttpTrigger1/run.csx",
-                "config_href": "https://fapp-dd-cs-test.azurewebsites.net/admin/vfs/site/wwwroot/HttpTrigger1/function.json",
-                "href": "https://fapp-dd-cs-test.azurewebsites.net/admin/functions/HttpTrigger1",
+                "script_root_path_href": "[concat('https://', parameters('FunctionAppName'),'.azurewebsites.net/admin/vfs/site/wwwroot/HttpTrigger1/')]",
+                "script_href": "[concat('https://', parameters('FunctionAppName'), '.azurewebsites.net/admin/vfs/site/wwwroot/HttpTrigger1/run.csx')]",
+                "config_href": "[concat('https://', parameters('FunctionAppName'), '.azurewebsites.net/admin/vfs/site/wwwroot/HttpTrigger1/function.json')]",
+                "href": "[concat('https://', parameters('FunctionAppName'), '.azurewebsites.net/admin/functions/HttpTrigger1')]",
                 "config": {},
                 "test_data": "{\"method\":\"post\",\"body\":\"[{\\r\\n    \\\"deviceId\\\": \\\"TEST\\\"\\r\\n}]\",\"queryStringParams\":[],\"headers\":[]}"
             }
@@ -623,7 +575,7 @@
                 "[resourceId('Microsoft.Web/sites', parameters('FunctionAppName'))]"
             ],
             "properties": {
-                "siteName": "fapp-dd-cs-test",
+                "siteName": "[parameters('FunctionAppName')]",
                 "hostNameType": "Verified"
             }
         },
