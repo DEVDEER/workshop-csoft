@@ -5,11 +5,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>C:\Users\schmidt\source\repos\workshop-csoft\part02\Services\Services.Core\Services.Core.xml</DocumentationFile>
+    <DocumentationFile>Services.Core.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Users\schmidt\source\repos\workshop-csoft\part02\Services\Services.Core\Services.Core.xml</DocumentationFile>
+    <DocumentationFile>Services.Core.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
