@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace commasoft.Workshop.Logic.Interfaces
+﻿namespace commasoft.Workshop.Logic.Interfaces
 {
     using System;
     using System.Collections.Generic;
@@ -26,6 +23,10 @@ namespace commasoft.Workshop.Logic.Interfaces
         /// <returns>The list of entries.</returns>
         Task<IEnumerable<T>> GetAllAsync(int? maxEntries = null);
 
+        /// <summary>
+        /// Retrieves the amount of all telemetry items in the storage.
+        /// </summary>
+        /// <returns>The amount of telemetry entries.</returns>
         Task<int> GetCountAsync();
 
         #endregion
