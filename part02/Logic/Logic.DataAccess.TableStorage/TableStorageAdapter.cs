@@ -34,7 +34,7 @@
 
         private async Task SyncCacheAsync()
         {
-            DateTimeOffset lastRetrieved = DateTimeOffset.Now.Subtract(TimeSpan.FromDays(100));
+            var lastRetrieved = DateTimeOffset.Now.Subtract(TimeSpan.FromDays(100));
             if (_cache == null || !_cache.Any())
             {
                 _cache = new List<T>();
@@ -48,7 +48,7 @@
             var table = client.GetTableReference(Settings.TableName);
             TableContinuationToken token = null;
             var condition = TableQuery.GenerateFilterConditionForDate(
-                "Timestamp", QueryComparisons.GreaterThan,
+                nameof(TelemeryTableEntity.Timestamp), QueryComparisons.GreaterThan,
                 lastRetrieved);
             var query = new TableQuery<T>
             {
@@ -74,7 +74,7 @@
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<T>> GetAllAsync(int? maxEntries)
+        public async Task<IEnumerable<T>> GetAllAsync(int? maxEntries = null)
         {
             await SyncCacheAsync();
             var result = _cache.OrderByDescending(e => e.Timestamp).AsQueryable();
@@ -83,6 +83,12 @@
                 result = result.Take(maxEntries.Value);
             }
             return result;
+        }
+
+        public async Task<int> GetCountAsync()
+        {
+            await SyncCacheAsync();
+            return _cache.Count;
         }
 
         #endregion

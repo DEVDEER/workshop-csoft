@@ -14,7 +14,7 @@
     /// Provides endpoints for retrieval of telemetry data.
     /// </summary>
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class TelemetryController : ControllerBase
     {
         #region member vars
@@ -50,8 +50,34 @@
         [HttpGet]
         public async Task<IEnumerable<TelemeryTableEntity>> Get(int? maxEntries)
         {
-            var result = await _adapter.GetAllAsync(maxEntries);
-            return result.OrderByDescending(e => e.Timestamp);
+            try
+            {
+                return await _adapter.GetAllAsync(maxEntries);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the amount of entries.
+        /// </summary>
+        /// <returns>The amount of telemetry entries.</returns>
+        [HttpGet]
+        [Route("Count")]
+        public async Task<int> GetCountAsync()
+        {
+            try
+            {
+                return await _adapter.GetCountAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
         }
 
         #endregion

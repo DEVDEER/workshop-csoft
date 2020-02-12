@@ -23,5 +23,40 @@
             <param name="maxEntries">The optional amount of entries to retrieve or <c>null</c> if all entries should be delivered.</param>
             <returns>The list of telemetry entries.</returns>
         </member>
+        <member name="M:Services.Core.Controllers.TelemetryController.GetCountAsync">
+            <summary>
+            Retrieves the amount of entries.
+            </summary>
+            <returns>The amount of telemetry entries.</returns>
+        </member>
+        <member name="T:Services.Core.Startup">
+            <summary>
+            App startup used by the web host builder.
+            </summary>
+        </member>
+        <member name="M:Services.Core.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Default constructor.
+            </summary>
+            <param name="configuration">Handler to the configuration system.</param>
+        </member>
+        <member name="M:Services.Core.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+            This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            </summary>
+            <param name="app">The application builder.</param>
+            <param name="env">The hosting environment.</param>
+        </member>
+        <member name="M:Services.Core.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime. Use this method to add services to the container.
+            </summary>
+            <param name="services">The DI collection.</param>
+        </member>
+        <member name="P:Services.Core.Startup.Configuration">
+            <summary>
+            Handler to the configuration system.
+            </summary>
+        </member>
     </members>
 </doc>

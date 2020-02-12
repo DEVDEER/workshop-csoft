@@ -19,6 +19,12 @@ namespace Services.Core
     /// </summary>
     public class Startup
     {
+        #region member vars
+
+        private readonly string CorsPolicyName = "DefaultCorsPolicy";
+
+        #endregion
+
         #region constructors and destructors
 
         /// <summary>
@@ -45,10 +51,8 @@ namespace Services.Core
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseCors(CorsPolicyName);
             app.UseSwagger();
-
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-            // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(
                 c =>
                 {
@@ -71,6 +75,16 @@ namespace Services.Core
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddCors(
+                options =>
+                {
+                    options.AddPolicy(
+                        CorsPolicyName,
+                        builder =>
+                        {
+                            builder.WithOrigins(Configuration["Cors:Origins"]).AllowAnyMethod().AllowAnyHeader();
+                        });
+                });
             services.AddSwaggerGen(
                 c =>
                 {
