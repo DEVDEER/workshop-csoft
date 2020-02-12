@@ -1,4 +1,4 @@
-﻿namespace Logic.DataAccess.TableStorage
+﻿namespace commasoft.Workshop.Logic.Models
 {
     using System;
     using System.Linq;

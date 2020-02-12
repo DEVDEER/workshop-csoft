@@ -1,11 +1,12 @@
-﻿namespace Services.Core.Controllers
+﻿namespace commasoft.Workshop.Services.Core.Controllers
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
-    using Logic.DataAccess.TableStorage;
+    using Logic.Interfaces;
+    using Logic.Models;
 
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -32,7 +33,9 @@
         /// </summary>
         /// <param name="logger">The logger to use.</param>
         /// <param name="adapter">The table adapter to retrieve data.</param>
-        public TelemetryController(ILogger<TelemetryController> logger, ITableStorageAdapter<TelemeryTableEntity> adapter)
+        public TelemetryController(
+            ILogger<TelemetryController> logger,
+            ITableStorageAdapter<TelemeryTableEntity> adapter)
         {
             _logger = logger;
             _adapter = adapter;

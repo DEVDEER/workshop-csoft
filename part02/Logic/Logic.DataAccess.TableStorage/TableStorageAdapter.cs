@@ -1,4 +1,4 @@
-﻿namespace Logic.DataAccess.TableStorage
+﻿namespace commasoft.Workshop.Logic.DataAccess.TableStorage
 {
     using System;
     using System.Collections.Concurrent;
@@ -6,8 +6,12 @@
     using System.Linq;
     using System.Threading.Tasks;
 
+    using Interfaces;
+
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Table;
+
+    using Models;
 
     /// <summary>
     /// Default implementation of a simple table storage adapter.

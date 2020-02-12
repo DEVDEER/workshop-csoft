@@ -1,4 +1,7 @@
-﻿namespace Logic.DataAccess.TableStorage
+﻿using System;
+using System.Linq;
+
+namespace commasoft.Workshop.Logic.Interfaces
 {
     using System;
     using System.Collections.Generic;

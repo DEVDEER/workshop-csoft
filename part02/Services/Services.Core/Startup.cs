@@ -1,4 +1,4 @@
-namespace Services.Core
+namespace commasoft.Workshop.Services.Core
 {
     using System;
     using System.IO;
@@ -6,6 +6,8 @@ namespace Services.Core
     using System.Reflection;
 
     using Logic.DataAccess.TableStorage;
+    using Logic.Interfaces;
+    using Logic.Models;
 
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -82,7 +84,8 @@ namespace Services.Core
                         CorsPolicyName,
                         builder =>
                         {
-                            builder.WithOrigins(Configuration["Cors:Origins"]).AllowAnyMethod().AllowAnyHeader();
+                            builder.WithOrigins(Configuration["Cors:Origins"]).AllowAnyMethod()
+                                .AllowAnyHeader();
                         });
                 });
             services.AddSwaggerGen(
@@ -101,7 +104,9 @@ namespace Services.Core
                     c.IncludeXmlComments(xmlPath);
                 });
             services.AddSingleton<TableStorageAdapterSettings>();
-            services.AddTransient<ITableStorageAdapter<TelemeryTableEntity>, TableStorageAdapter<TelemeryTableEntity>>();
+            services
+                .AddTransient<ITableStorageAdapter<TelemeryTableEntity>,
+                    TableStorageAdapter<TelemeryTableEntity>>();
         }
 
         #endregion
